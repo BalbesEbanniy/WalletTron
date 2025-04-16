@@ -1,11 +1,15 @@
 from decimal import Decimal
-
-from fastapi import FastAPI, Path, Query, HTTPException
-from pydantic import Field, BaseModel, validator, field_validator
+from fastapi import FastAPI, HTTPException, Depends
+from pydantic import BaseModel, field_validator
+from sqlalchemy.orm import Session
+from app.models.walletmodel import Wallet
+from sqlalchemy import insert
 from tronpy import Tron
 from tronpy.exceptions import AddressNotFound
 from tronpy.keys import is_base58check_address
-from typing import Dict
+from typing import Dict, Annotated
+from app.backend.db_depends import get_db
+
 
 app = FastAPI()
 client = Tron()
@@ -27,9 +31,8 @@ class WalletResponse(BaseModel):
     energy: int
     trx_balance: Decimal
 
-
 @app.post('/wallet_info', response_model=WalletResponse)
-async def get_wallet_info(request: WalletRequest) -> WalletResponse:
+async def get_wallet_info(db: Annotated[Session, Depends(get_db)], request: WalletRequest) -> WalletResponse:
     address: str = request.address
 
     try:
@@ -39,11 +42,15 @@ async def get_wallet_info(request: WalletRequest) -> WalletResponse:
         raise HTTPException(status_code=404, detail="Wallet address not found")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
+    #
+    db.execute(insert(Wallet).values(address = request.address,
+                                     bandwidth = account_info.get('NetLimit', 0),
+                                     energy = account_info.get('TotalEnergyWeight', 0),
+                                     balance = balance))
+    db.commit()
     return WalletResponse(
         address=address,
-        bandwidth=account_info.get('freeNetLimit', 0),
-        energy = account_info.get("TotalEnergyWeight", 0),
+        bandwidth=account_info.get('NetLimit', 0),
+        energy=account_info.get("TotalEnergyWeight", 0),
         trx_balance=balance
     )
