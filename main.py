@@ -14,7 +14,7 @@ client = Tron()
 class WalletRequest(BaseModel):
     address: str
 
-    @field_validator("address", mode='before')
+    @field_validator("address", mode='after')
     def validate_tron_address(cls, v:str) -> str:
         if not is_base58check_address(v):
             raise ValueError("Invalid tron address format")
@@ -43,27 +43,7 @@ async def get_wallet_info(request: WalletRequest) -> WalletResponse:
 
     return WalletResponse(
         address=address,
-        bandwidth=account_info.get("free_net_used", 0),
-        energy = account_info.get("EnergyUsed", 0),
+        bandwidth=account_info.get('freeNetLimit', 0),
+        energy = account_info.get("TotalEnergyWeight", 0),
         trx_balance=balance
     )
-
-
-
-
-
-
-
-
-# @app.get('/')
-# async def get_wallets():
-#     return {'msg':'all wallets, include paggination'}
-
-
-
-
-
-# @app.get('/hello/{adress}')
-# async def post_wallets(adress: Annotated[str, Path(min_length=10, max_length=100)],
-#                        first_name: Annotated[str | None, Query(min_length=2, max_length=10)] = None) -> dict:
-#     return {'msg': adress, 'name' : first_name}
