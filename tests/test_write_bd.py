@@ -5,7 +5,7 @@ from app.backend.db import Base
 from app.backend.db_depends import get_db
 from app.models.walletmodel import Wallet
 from main import app
-
+# checking correct work with fake in-memory db
 TEST_SQLALCHEMY_DATABASE_URL = 'sqlite://'
 engine = create_engine(TEST_SQLALCHEMY_DATABASE_URL,
                        connect_args={'check_same_thread': False},

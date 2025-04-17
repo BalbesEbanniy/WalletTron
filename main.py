@@ -23,7 +23,7 @@ class WalletRequest(BaseModel):
             raise ValueError("Invalid tron address format")
         return v
 
-
+# pydantic models for response/saving in db
 class WalletResponse(BaseModel):
     address: str
     bandwidth: int
@@ -37,7 +37,7 @@ class WalletOut(BaseModel):
     bandwidth: int
     energy: int
     balance: float
-
+# handler, that receive address and return account data by WalletResponse model/saving in db
 @app.post('/wallet_info', response_model=WalletResponse)
 async def get_wallet_info(db: Annotated[Session, Depends(get_db)], request: WalletRequest) -> WalletResponse:
     address: str = request.address
@@ -61,7 +61,7 @@ async def get_wallet_info(db: Annotated[Session, Depends(get_db)], request: Wall
         energy=account_info.get("TotalEnergyWeight", 0),
         trx_balance=balance
     )
-
+# handler that return records from db, depends on offset(pagination)
 @app.get('/wallets', response_model=List[WalletOut])
 async def get_wallets(
         db: Session = Depends(get_db),

@@ -7,7 +7,7 @@ import pytest
 @patch('main.client.get_account_resource')
 @patch('main.client.get_account_balance')
 
-
+#unit test, that checks correct data output
 async def test_get_wallet_info(mock_get_balance, mock_get_resource):
     mock_get_resource.return_value = {
         'NetLimit': 12345,
