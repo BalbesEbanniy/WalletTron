@@ -1,5 +1,5 @@
 from decimal import Decimal
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Query
 from pydantic import BaseModel, field_validator
 from sqlalchemy.orm import Session
 from app.models.walletmodel import Wallet
@@ -7,7 +7,7 @@ from sqlalchemy import insert
 from tronpy import Tron
 from tronpy.exceptions import AddressNotFound
 from tronpy.keys import is_base58check_address
-from typing import Dict, Annotated
+from typing import Dict, Annotated, List
 from app.backend.db_depends import get_db
 
 
@@ -30,6 +30,14 @@ class WalletResponse(BaseModel):
     bandwidth: int
     energy: int
     trx_balance: Decimal
+
+
+class WalletOut(BaseModel):
+    id: int
+    address: str
+    bandwidth: int
+    energy: int
+    balance: float
 
 @app.post('/wallet_info', response_model=WalletResponse)
 async def get_wallet_info(db: Annotated[Session, Depends(get_db)], request: WalletRequest) -> WalletResponse:
@@ -54,3 +62,13 @@ async def get_wallet_info(db: Annotated[Session, Depends(get_db)], request: Wall
         energy=account_info.get("TotalEnergyWeight", 0),
         trx_balance=balance
     )
+
+@app.get('/wallets', response_model=List[WalletOut])
+async def get_wallets(
+        db: Session = Depends(get_db),
+        limit: int = Query(5, ge=1, le=100),
+        offset: int = Query(0, ge = 0)
+):
+    wallets = db.query(Wallet).offset(offset).limit(limit).all()
+    return wallets
+
