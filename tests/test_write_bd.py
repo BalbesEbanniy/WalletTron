@@ -1,7 +1,6 @@
 from sqlalchemy import create_engine, StaticPool
 from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
-import pytest
 from app.backend.db import Base
 from app.backend.db_depends import get_db
 from app.models.walletmodel import Wallet
