@@ -1,0 +1,7 @@
+SQLAlchemy~=2.0.40
+alembic~=1.15.2
+fastapi~=0.115.12
+pytest~=8.3.5
+pydantic~=2.11.3
+tronpy~=0.5.0
+uvicorn

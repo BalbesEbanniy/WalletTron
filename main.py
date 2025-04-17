@@ -14,10 +14,9 @@ from app.backend.db_depends import get_db
 app = FastAPI()
 client = Tron()
 
-
+# address validation
 class WalletRequest(BaseModel):
     address: str
-
     @field_validator("address", mode='after')
     def validate_tron_address(cls, v:str) -> str:
         if not is_base58check_address(v):
