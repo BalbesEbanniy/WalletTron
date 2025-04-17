@@ -16,8 +16,8 @@
 
 ```bash/zsh
 # Клонируем репозиторий
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+https://github.com/BalbesEbanniy/WalletTron.git
+cd WalletTron
 
 # Собираем образ
 docker build -t tron-wallet-api .
