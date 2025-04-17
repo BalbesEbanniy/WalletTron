@@ -71,4 +71,3 @@ async def get_wallets(
 ):
     wallets = db.query(Wallet).offset(offset).limit(limit).all()
     return wallets
-
